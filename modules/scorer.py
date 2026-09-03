@@ -13,7 +13,6 @@ DEFAULT_WEIGHTS: Dict[str, float] = {
     "Internal Projects / Hackathons": 5.0,
 }
 
-
 def normalize_weights(weights: Dict[str, float]) -> Dict[str, float]:
     """
     Normalize a dict of weights so they sum to 100. Returns a new dict.
@@ -24,7 +23,6 @@ def normalize_weights(weights: Dict[str, float]) -> Dict[str, float]:
         return DEFAULT_WEIGHTS.copy()
     factor = 100.0 / total
     return {k: round(v * factor, 2) for k, v in weights.items()}
-
 
 def compute_weighted_score(scores: Dict[str, float], weights: Dict[str, float]) -> float:
     """

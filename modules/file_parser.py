@@ -4,7 +4,6 @@ file_parser.py - helpers to parse uploaded resume files (.pdf, .docx, .txt)
 from typing import Tuple
 import io
 
-
 def parse_txt(file_bytes: bytes) -> str:
     """
     Return decoded text for a .txt file.
@@ -14,7 +13,6 @@ def parse_txt(file_bytes: bytes) -> str:
     except Exception:
         return file_bytes.decode("latin-1", errors="replace")
 
-
 def parse_docx(file_obj: io.BytesIO) -> str:
     """
     Parse a DOCX file via python-docx.
@@ -23,7 +21,6 @@ def parse_docx(file_obj: io.BytesIO) -> str:
     document = Document(file_obj)
     paragraphs = [p.text for p in document.paragraphs]
     return "\n".join(paragraphs)
-
 
 def parse_pdf(file_obj: io.BytesIO) -> str:
     """
@@ -50,16 +47,13 @@ def parse_pdf(file_obj: io.BytesIO) -> str:
                 pages.append(p.extract_text() or "")
             return "\n".join(pages).strip()
         except Exception as e:
-            raise RuntimeError(
-                "Failed to parse PDF. The file may be scanned/images-only or corrupted.") from e
-
+            raise RuntimeError("Failed to parse PDF. The file may be scanned/images-only or corrupted.") from e
 
 def parse_uploaded_file(uploaded) -> Tuple[str, str]:
     """
     Given a Streamlit UploadedFile, return (text, error_message)
     """
-    import os
-    import io
+    import os, io
     name = uploaded.name
     ext = os.path.splitext(name)[1].lower()
     content = uploaded.read()

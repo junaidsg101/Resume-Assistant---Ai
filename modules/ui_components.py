@@ -10,14 +10,12 @@ import re
 
 CATEGORIES = list(scorer.DEFAULT_WEIGHTS.keys())
 
-
 def domain_selector(domains: dict) -> str:
     """
     Show a selectbox of the 10 domains.
     """
     options = list(domains.keys())
     return st.selectbox("Select career domain", options)
-
 
 def input_mode_widget() -> Tuple[str, str]:
     """
@@ -28,8 +26,7 @@ def input_mode_widget() -> Tuple[str, str]:
         text = st.text_area("Paste or type resume text", height=300)
         return mode, text.strip()
     else:
-        uploaded = st.file_uploader(
-            "Upload resume (.pdf, .docx, .txt)", type=["pdf", "docx", "txt"])
+        uploaded = st.file_uploader("Upload resume (.pdf, .docx, .txt)", type=["pdf", "docx", "txt"])
         if uploaded:
             from modules.file_parser import parse_uploaded_file
             text, err = parse_uploaded_file(uploaded)
@@ -37,18 +34,15 @@ def input_mode_widget() -> Tuple[str, str]:
                 st.error(f"File error: {err}")
                 return mode, ""
             if not text.strip():
-                st.error(
-                    "Parsed file contained no text. It may be scanned or image-only.")
+                st.error("Parsed file contained no text. It may be scanned or image-only.")
             return mode, text.strip()
         return mode, ""
-
 
 def _get_session_weights():
     if "weights" not in st.session_state:
         st.session_state["weights"] = scorer.DEFAULT_WEIGHTS.copy()
         st.session_state["_prev_weights"] = st.session_state["weights"].copy()
     return st.session_state["weights"]
-
 
 def weight_sliders() -> Dict[str, float]:
     """
@@ -63,11 +57,9 @@ def weight_sliders() -> Dict[str, float]:
         if key not in st.session_state:
             st.session_state[key] = float(weights.get(k, 0.0))
         # slider with on_change handler that notes which key changed
-
         def _mark_change(k=k, key=key):
             st.session_state["_last_changed"] = k
-        st.slider(k, min_value=0.0, max_value=100.0,
-                  value=st.session_state[key], key=key, on_change=_mark_change)
+        st.slider(k, min_value=0.0, max_value=100.0, value=st.session_state[key], key=key, on_change=_mark_change)
     # perform normalization if any change
     if "_last_changed" in st.session_state:
         changed = st.session_state.pop("_last_changed")
@@ -105,10 +97,8 @@ def weight_sliders() -> Dict[str, float]:
         st.session_state["weights"] = final
     # return current weights
     if "weights" not in st.session_state:
-        st.session_state["weights"] = scorer.normalize_weights(
-            {k: float(st.session_state[f"w_{k}"]) for k in CATEGORIES})
+        st.session_state["weights"] = scorer.normalize_weights({k: float(st.session_state[f"w_{k}"]) for k in CATEGORIES})
     return st.session_state["weights"]
-
 
 def plot_score_charts(scores: Dict[str, float], weights: Dict[str, float]) -> None:
     """
@@ -122,20 +112,16 @@ def plot_score_charts(scores: Dict[str, float], weights: Dict[str, float]) -> No
     fig = go.Figure()
     fig.add_trace(go.Scatterpolar(r=values + [values[0]], theta=categories + [categories[0]],
                                   fill="toself", name="Scores"))
-    fig.update_layout(polar=dict(radialaxis=dict(
-        range=[0, 100])), showlegend=False, height=400)
+    fig.update_layout(polar=dict(radialaxis=dict(range=[0, 100])), showlegend=False, height=400)
     st.plotly_chart(fig, use_container_width=True)
 
     # Horizontal bar
     st.plotly_chart(_bar_figure(categories, values), use_container_width=True)
 
-
 def _bar_figure(categories: List[str], values: List[float]):
-    fig = go.Figure(go.Bar(x=values, y=categories,
-                    orientation="h", marker_color="rgba(50,150,255,0.6)"))
+    fig = go.Figure(go.Bar(x=values, y=categories, orientation="h", marker_color="rgba(50,150,255,0.6)"))
     fig.update_layout(xaxis_title="Score (0-100)", height=350)
     return fig
-
 
 def grade_from_score(score: float) -> str:
     if score >= 90:
@@ -146,7 +132,6 @@ def grade_from_score(score: float) -> str:
         return "Competitive"
     return "Entry / Needs Improvement"
 
-
 def ats_keyword_match(resume_text: str, job_description: str) -> Tuple[set, set]:
     """
     Lightweight ATS keyword overlap extraction.
@@ -154,8 +139,7 @@ def ats_keyword_match(resume_text: str, job_description: str) -> Tuple[set, set]
     """
     def tokenize(text: str):
         tokens = re.findall(r"[A-Za-z0-9\+\#\-\_]+", text.lower())
-        stop = {"and", "or", "with", "the", "a", "an",
-                "to", "for", "of", "in", "on", "using"}
+        stop = {"and", "or", "with", "the", "a", "an", "to", "for", "of", "in", "on", "using"}
         return {t for t in tokens if t not in stop and len(t) > 1}
 
     resume_tokens = tokenize(resume_text)
@@ -164,7 +148,6 @@ def ats_keyword_match(resume_text: str, job_description: str) -> Tuple[set, set]
     missing = job_tokens - resume_tokens
     # filter common short tokens
     return overlap, missing
-
 
 def show_improvement_diff(before: str, after: str):
     """

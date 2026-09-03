@@ -7,7 +7,6 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import letter
 
-
 def generate_markdown_report(resume_text: str, domain: str, weights: Dict[str, float], result: Dict[str, Any], overall_score: float, tier: str) -> str:
     """
     Return a Markdown string summarizing the evaluation.
@@ -32,7 +31,6 @@ def generate_markdown_report(resume_text: str, domain: str, weights: Dict[str, f
     lines.append(resume_text[:2000])
     return "\n\n".join(lines)
 
-
 def generate_pdf_report(markdown_text: str) -> bytes:
     """
     Convert a very simple markdown to PDF using reportlab.
@@ -50,8 +48,7 @@ def generate_pdf_report(markdown_text: str) -> bytes:
         elif line.startswith("### "):
             flow.append(Paragraph(line[4:].strip(), styles["Heading3"]))
         else:
-            flow.append(Paragraph(line.replace(
-                "_", "\\_").strip(), styles["BodyText"]))
+            flow.append(Paragraph(line.replace("_", "\\_").strip(), styles["BodyText"]))
         flow.append(Spacer(1, 6))
     doc.build(flow)
     buffer.seek(0)
